@@ -13,11 +13,13 @@ maxi = 0
 for iteration in range( NB_ITER ) :
 	for i in range( mdp.nb_x ) : 
 		for j in range( mdp.nb_y ) : 
+
 			if ( mdp.end( i, j ) ) : 
 				continue
+
+			#Bellman optimality equation
 			valeur_future = mdp.max_reward( i, j )
 			mdp.value[i][j] = mdp.discount*valeur_future
-			#print valeur_future
 			valeur_future = 0
 
 mdp.greedy_policy()

@@ -3,7 +3,7 @@ HAUT = 0
 DROITE = 1
 BAS = 2
 GAUCHE = 3
-NB_ITER = 100
+NB_ITER = 10
 
 
 mdp = objects.amarkov( 0.5 )
@@ -12,34 +12,40 @@ valeur_future = 0
 
 mdp.print_tab
 
+for greed in range( 5 ) : 
+	for iteration in range( NB_ITER ) :
+		for i in range( mdp.nb_x ) : 
+			for j in range( mdp.nb_y ) : 
 
-for iteration in range( NB_ITER ) :
-	for i in range( mdp.nb_x ) : 
-		for j in range( mdp.nb_y ) : 
-			for k in range( mdp.nb_actions ) : 
-				etati, etatj = mdp.action( k, i, j )
-				valeur_future = mdp.value[etati][etatj]
-				valeur += mdp.tab_trans[i][j][k]*( mdp.tab_reward[k] + mdp.discount*valeur_future )
-			mdp.value[i][j] = valeur			
-			valeur = 0 
+				#Si case goal -> ne pas faire les calculs
+				if( mdp.end( i, j )) :
+					continue
+					
+				for k in range( mdp.nb_actions ) : 
 
-mdp.greedy_policy()
-mdp.value_to_zero()
+					etati, etatj = mdp.action( k, i, j )
 
-for iteration in range( NB_ITER ) :
-	for i in range( mdp.nb_x ) : 
-		for j in range( mdp.nb_y ) : 
-			for k in range( mdp.nb_actions ) : 
-				etati, etatj = mdp.action( k, i, j )
-				valeur_future = mdp.value[etati][etatj]
-				valeur += mdp.tab_trans[i][j][k]*( mdp.tab_reward[k] + mdp.discount*valeur_future )
-			mdp.value[i][j] = valeur			
-			valeur = 0 
+					#Bellman expectation equation
+					reward = mdp.tab_reward[k]
+					valeur_future = mdp.value[etati][etatj]
+					valeur += mdp.tab_trans[i][j][k]*( reward + mdp.discount*valeur_future )
 
-mdp.greedy_policy()
-mdp.value_to_zero()
+				mdp.value[i][j] = valeur			
+				valeur = 0 
 
-
+	#Changement de la politique + reinitialisation du tableau de valeurs
+	mdp.greedy_policy()
+	mdp.value_to_zero()
 
 print( mdp.tab_trans )
-print( mdp.value )
+
+
+
+
+
+
+
+
+
+
+

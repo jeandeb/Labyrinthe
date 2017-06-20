@@ -14,17 +14,12 @@ class amarkov( object ) :
 		self.nb_y = 4
 		self.nb_actions = 4
 		self.nbstate = self.nb_x * self.nb_y
-		self.discount = discount#valeur de reduction des rewards par etapes
-		self.tab_state = np.zeros(( self.nb_x, self.nb_y ))
-		self.tab_trans = np.zeros(( self.nb_x, self.nb_y, self.nb_actions ))
-		self.tab_reward = np.zeros(( self.nb_actions ))
+		self.discount = discount #valeur de reduction des rewards par etapes
 		self.value = np.zeros(( self.nb_x, self.nb_y ))
 
-		#maxiter ?
+		#intialisation du tableau d'etat (plateau du jeu)
+		self.tab_state = np.zeros(( self.nb_x, self.nb_y ))
 
-		#initiliasation des etats
-		#si final = 2, si case normale = 0, si case pleine = 1
-		#self.value[self.nb_x-1][self.nb_y-1] = 20
 		self.tab_state[self.nb_x-1][self.nb_y-1] = 2
 
 		#case pleine(block)
@@ -38,35 +33,30 @@ class amarkov( object ) :
 		self.tab_state[5][0] = 1
 
 		#initialisation des rewards a -1
+		self.tab_reward = np.zeros(( self.nb_actions ))
 		for i in range( 4 ) : 
 			self.tab_reward[i] = -5
 
-
+		#intialisation de la politique
+		self.tab_trans = np.zeros(( self.nb_x, self.nb_y, self.nb_actions ))
 		for i in range( self.nb_x ) : 
 			for j in range( self.nb_y ) :
 				for k in range( self.nb_actions ) : 
 					self.tab_trans[i][j][k] = 0.25
-		self.tab_trans[self.nb_x-1][self.nb_y-1] = [0,0,0,0]
 
+		
 	def get_state( self, i, j ) :
+
 		return self.tab_state[i][j]
 
+	#si la case n'est pas un block
 	def is_jouable( self, i, j ) : 
+
 		if( self.tab_state[i][j] != 1 ) : 
 			return True
 		return False
-	"""def get_proba( i, j, action ) :
-		return self.tab_trans[i][j][action] 
 
-	def set_proba( i, j, action, proba ) :
-		self.tab_trans[i][j][action] = proba
-
-	def get_value( i , j ) : 
-		return self.value[i][j]
-
-	def set_value( i , j, value ) : 
-		self.value[i][j] = """
-
+	#les regles du jeu, renvoie la case atteinte lors de laction num
 	def action( self, num, i, j ):
 
 		if( (self.tab_state[i][j] == 1 ) or (self.end( i, j ))  ) : 
@@ -103,12 +93,14 @@ class amarkov( object ) :
 				return i,j
 			return i,j-1
 
+	#boolean renvoyant si oui ou non i et j correspondent à un état final
 	def end( self, i, j ) : 
+
 		if ( self.tab_state[i][j] == 2 ) : 
 			return True
 		return False
 
-
+	#change la politique en fonction du tableau de valeur
 	def greedy_policy( self ):
 		 
 		 #tableau qui contient la valeur de chaque action
@@ -122,13 +114,12 @@ class amarkov( object ) :
 
 		 		#remplissage de taboptimal par les action avec un valeur max
 		 		for k in range( self.nb_actions ) : 
-		 			#print k
+		 		
 		 			x, y = self.action( k, i, j )
 		 			value = self.value[x][y] + self.tab_reward[k]
 
 		 			if( value == maxi ) :
-		 				#print self.value[x][y]
-		 				#print i, j
+		 	
 		 				tab_optimal[k] = maxi
 		 				cpt += 1
 
@@ -140,28 +131,27 @@ class amarkov( object ) :
 			 			self.tab_trans[i][j][k] = proba
 			 		else :
 			 			self.tab_trans[i][j][k] = 0
-			 	#print tab_optimal
-			self.tab_trans[self.nb_x-1][self.nb_y-1] = [0,0,0,0]
-
 	
+	#met a zero les valeurs de value
 	def value_to_zero( self ) :
+
 		 for i in range( self.nb_x ) : 
 		 	for j in range( self.nb_y ): 
 		 		self.value[i][j] = 0	 
 
+	#renvoie le reward maximum atteignable quelque soit les actions
 	def max_reward( self, i , j ) : 
 
 		maxi = -10000
 
 		for k in range( self.nb_actions ) : 
-
 			x, y = self.action( k, i, j )
 			if ( (self.value[x][y] + self.tab_reward[k]) >= maxi ) : 
-
 				maxi = self.value[x][y] + self.tab_reward[k]
 
 		return maxi
 
+	#mis en forme "graphique" du labyrinthe
 	@property 
 	def print_tab( self ) : 
 
