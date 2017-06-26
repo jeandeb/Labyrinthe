@@ -35,7 +35,7 @@ class amarkov( object ) :
 		#initialisation des rewards a -1
 		self.tab_reward = np.zeros(( self.nb_actions ))
 		for i in range( 4 ) : 
-			self.tab_reward[i] = -5
+			self.tab_reward[i] = 0
 
 		#intialisation de la politique
 		self.tab_trans = np.zeros(( self.nb_x, self.nb_y, self.nb_actions ))
@@ -93,7 +93,7 @@ class amarkov( object ) :
 				return i,j
 			return i,j-1
 
-	#boolean renvoyant si oui ou non i et j correspondent à un état final
+	#boolean renvoyant si oui ou non i et j correspondent a un etat final
 	def end( self, i, j ) : 
 
 		if ( self.tab_state[i][j] == 2 ) : 

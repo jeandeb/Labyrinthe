@@ -1,4 +1,6 @@
 import objects
+import pickle 
+import sys
 HAUT = 0 
 DROITE = 1
 BAS = 2
@@ -23,5 +25,9 @@ for iteration in range( NB_ITER ) :
 			valeur_future = 0
 
 mdp.greedy_policy()
-print( mdp.value )
-print( mdp.tab_trans )
+
+if( (len(sys.argv) > 1) and (sys.argv[1] == "yes") ) :
+	pickle.dump( mdp, open( "mdp_valueite.p", "wb" ) )
+
+#print( mdp.value )
+#print( mdp.tab_trans )
